@@ -1,0 +1,95 @@
+﻿@using LiMarket_V1._0._0.Models
+@model LiMarket_V1._0._0.Models.Genre
+
+@{
+    ViewBag.Title = "CreateGenre";
+    var image = new Image();
+    Model.Images.Add(image);
+}
+
+<h2>CreateGenre</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Genre</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Books, "Books", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @{ if (ViewBag.booksList.Count >= 1)
+                {
+                    foreach (Book a in ViewBag.booksList)
+                    {
+                        <input type="checkbox" name="selectedBooks" value="@a.Id"
+                               @(Model.Books.Contains(a) ? "checked=\"checked\"" : "") />@a.Name <br />
+                        }
+                    }
+                    else
+                    {
+                        <some style="color: red">Not Books</some>
+                    }
+            }
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Images, "Images", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @{ if (ViewBag.imagesList.Count >= 1)
+                {
+                    foreach (Image a in ViewBag.imagesList)
+                    {
+                        <input type="checkbox" name="selectedImages" value="@a.Id"
+                               @(Model.Images.Contains(a) ? "checked=\"checked\"" : "") />@a.Alt <br />
+                        }
+                    }
+                    else
+                    {
+                        <some style="color: red">Not Images</some>
+                    }
+            }
+        </div>
+
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Popularity, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Popularity, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Popularity, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

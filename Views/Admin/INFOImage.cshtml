@@ -1,0 +1,36 @@
+﻿@model LiMarket_V1._0._0.Models.Image
+
+@{
+    ViewBag.Title = "INFOImage";
+}
+
+<h2>INFOImage</h2>
+
+<div>
+    <h4>Image</h4>
+    <hr />
+    <img src="@Model.Url" alt="@Model.Alt" width="20%" />
+    <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Url)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Url)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Alt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Alt)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "EditImage", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

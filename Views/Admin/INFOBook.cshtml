@@ -1,0 +1,170 @@
+﻿@model LiMarket_V1._0._0.Models.Book
+@{
+    ViewBag.Title = "INFOBook";
+}
+
+<h2>INFOBook</h2>
+
+<div>
+    <h4>Book</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Genre)
+        </dt>
+
+        <dd>
+            @{
+                if (Model.Genre != null)
+                {
+                    @Html.DisplayFor(model => model.Genre.Name)
+                }
+                else
+                {
+                        <some style="color: red">Without Genre</some>
+                }
+               
+            }
+        </dd>
+        
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NumPages)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NumPages)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Year)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Year)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @{ if (Model.Description != null)
+                {
+                    @Html.DisplayFor(model => model.Description)
+                }
+                else
+                {
+            <some style="color: red">Without Description</some>
+                }}
+
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Popularity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Popularity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsAvaible)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsAvaible)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AddDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AddDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpgradeDate)
+        </dt>
+
+        <dd>
+
+            @{
+                if (Model.UpgradeDate != null)
+                {
+                    @Html.DisplayFor(model => model.UpgradeDate)
+                }
+                else
+                {
+                    <some style="color: red">Not Upgrade</some>
+                }
+            }
+        </dd>
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Authors)
+        </dt>
+
+        <dd>
+            @{ if (Model.Authors.Count >= 1)
+                {
+                    <ul>
+                        @foreach (var author in Model.Authors)
+                        {
+                            <li><p> @author.LastName  @author.FirstName</p> </li>
+
+                        }
+                    </ul>
+                }
+                else
+                {
+        <some style="color: red">Not Authors</some>
+                }
+            }
+
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Images)
+        </dt>
+
+        <dd>
+            @{ if (Model.Images.Count >= 1)
+                {
+                    <ul>
+                        @foreach (var image in Model.Images)
+                        {
+                            <li><p>Alt = @image.Alt URL = @image.Url</p></li>
+                        }
+                    </ul>
+                }
+                else
+                {
+        <some style="color: red">Not Images</some>
+                }
+            }
+
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "EditBook", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
