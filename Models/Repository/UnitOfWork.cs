@@ -19,7 +19,7 @@ namespace LiMarket_V1._0._0.Models.Repository
             get
             {
                 if (_bookRepository == null)
-                    _bookRepository = new EfRepository<Book>(_db);
+                    _bookRepository = new EfRepository<Book>();
                 return _bookRepository;
             }
         }
@@ -29,7 +29,7 @@ namespace LiMarket_V1._0._0.Models.Repository
             get
             {
                 if (_authorRepository == null)
-                    _authorRepository = new EfRepository<Author>(_db);
+                    _authorRepository = new EfRepository<Author>();
                 return _authorRepository;
             }
         }
@@ -39,7 +39,7 @@ namespace LiMarket_V1._0._0.Models.Repository
             get
             {
                 if (_imageRepository == null)
-                    _imageRepository = new EfRepository<Image>(_db);
+                    _imageRepository = new EfRepository<Image>();
                 return _imageRepository;
             }
         }
@@ -49,7 +49,7 @@ namespace LiMarket_V1._0._0.Models.Repository
             get
             {
                 if (_genreRepository == null)
-                    _genreRepository = new EfRepository<Genre>(_db);
+                    _genreRepository = new EfRepository<Genre>();
                 return _genreRepository;
             }
         }

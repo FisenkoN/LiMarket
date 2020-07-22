@@ -22,10 +22,8 @@ namespace LiMarket_V1._0._0.Tools
             builder.RegisterControllers(typeof(AdminController).Assembly);
 
             // регистрируем споставление типов
-            builder.RegisterType<EfRepository<Book>>().As<IRepository<Book>>();
-            builder.RegisterType<EfRepository<Genre>>().As<IRepository<Genre>>();
-            builder.RegisterType<EfRepository<Author>>().As<IRepository<Author>>();
-            builder.RegisterType<EfRepository<Image>>().As<IRepository<Image>>();
+            builder.RegisterGeneric(typeof(EfRepository<>)).As(typeof(IRepository<>))
+                .WithProperty("Context", new MsContext());
 
             // создаем новый контейнер с теми зависимостями, которые определены выше
             var container = builder.Build();

@@ -13,5 +13,6 @@ namespace LiMarket_V1._0._0.Models.Repository
         void Create(TEntity item);
         void Update(TEntity item);
         void Delete(int id);
+        void Save();
     }
 }

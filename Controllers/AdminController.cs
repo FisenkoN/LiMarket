@@ -8,14 +8,20 @@ using System.Web.Mvc;
 
 namespace LiMarket_V1._0._0.Controllers
 {
-    [Authorize(Roles = "admin")]
+
     public class AdminController : Controller
     {
-        private UnitOfWork _unitOfWork;
+        private IRepository<Book> bookRepository;
+        private IRepository<Image> imageRepository;
+        private IRepository<Author> authorRepository;
+        private IRepository<Genre> genreRepository;
 
-        public AdminController()
+        public AdminController(IRepository<Book> book, IRepository<Image> image, IRepository<Author> author, IRepository<Genre> genre)
         {
-            _unitOfWork = new UnitOfWork();
+            bookRepository = book;
+            imageRepository = image;
+            genreRepository = genre;
+            authorRepository = author;
         }
 
         public ActionResult Index()
@@ -26,7 +32,7 @@ namespace LiMarket_V1._0._0.Controllers
         public ActionResult CreateAuthor()
         {
             Tool tool = new Tool();
-            ViewBag.booksList = _unitOfWork.Books.GetAll();
+            ViewBag.booksList = bookRepository.GetAll();
             ViewBag.imagesList = new List<Image>(tool.GetImages());
 
             return View(new Author());
@@ -37,7 +43,7 @@ namespace LiMarket_V1._0._0.Controllers
         {
             if (selectedBooks != null)
             {
-                foreach (var a in _unitOfWork.Books.GetAll().Where(a => selectedBooks.Contains(a.Id)))
+                foreach (var a in bookRepository.GetAll().Where(a => selectedBooks.Contains(a.Id)))
                 {
                     author.Books.Add(a);
                 }
@@ -45,7 +51,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedImages != null)
             {
-                foreach (var a in _unitOfWork.Images.GetAll().Where(a => selectedImages.Contains(a.Id)))
+                foreach (var a in imageRepository.GetAll().Where(a => selectedImages.Contains(a.Id)))
                 {
                     author.Images.Add(a);
                 }
@@ -55,9 +61,9 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.Authors.Create(author);
+                authorRepository.Create(author);
 
-                _unitOfWork.Save();
+                authorRepository.Save();
 
                 return RedirectToAction("Index");
             }
@@ -68,9 +74,9 @@ namespace LiMarket_V1._0._0.Controllers
         {
             Tool tool = new Tool();
 
-            ViewBag.genresList = new SelectList(_unitOfWork.Genres.GetAll(), "Id", "Name");
+            ViewBag.genresList = new SelectList(genreRepository.GetAll(), "Id", "Name");
 
-            ViewBag.authorList = _unitOfWork.Authors.GetAll();
+            ViewBag.authorList = authorRepository.GetAll();
 
             ViewBag.imagesList = new List<Image>(tool.GetImages());
 
@@ -82,7 +88,7 @@ namespace LiMarket_V1._0._0.Controllers
         {
             if (selectedAuthors != null)
             {
-                foreach (var a in _unitOfWork.Authors.GetAll().Where(a => selectedAuthors.Contains(a.Id)))
+                foreach (var a in authorRepository.GetAll().Where(a => selectedAuthors.Contains(a.Id)))
                 {
                     book.Authors.Add(a);
                 }
@@ -90,7 +96,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedImages != null)
             {
-                foreach (var a in _unitOfWork.Images.GetAll().Where(a => selectedImages.Contains(a.Id)))
+                foreach (var a in imageRepository.GetAll().Where(a => selectedImages.Contains(a.Id)))
                 {
                     book.Images.Add(a);
                 }
@@ -100,9 +106,9 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.Books.Create(book);
+                bookRepository.Create(book);
 
-                _unitOfWork.Save();
+                bookRepository.Save();
 
                 return RedirectToAction("Index");
             }
@@ -123,7 +129,7 @@ namespace LiMarket_V1._0._0.Controllers
         {
             if (selectedBooks != null)
             {
-                foreach (var a in _unitOfWork.Books.GetAll().Where(a => selectedBooks.Contains(a.Id)))
+                foreach (var a in bookRepository.GetAll().Where(a => selectedBooks.Contains(a.Id)))
                 {
                     genre.Books.Add(a);
                 }
@@ -131,7 +137,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedImages != null)
             {
-                foreach (var a in _unitOfWork.Images.GetAll().Where(a => selectedImages.Contains(a.Id)))
+                foreach (var a in imageRepository.GetAll().Where(a => selectedImages.Contains(a.Id)))
                 {
                     genre.Images.Add(a);
                 }
@@ -141,9 +147,9 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.Genres.Create(genre);
+                genreRepository.Create(genre);
 
-                _unitOfWork.Save();
+                genreRepository.Save();
 
                 return RedirectToAction("Index");
             }
@@ -157,22 +163,22 @@ namespace LiMarket_V1._0._0.Controllers
             Tool tool = new Tool();
             var freeImages = new List<Image>(tool.GetImages());
 
-            for (int i = 0; i < _unitOfWork.Books.Get(id).Images.Count; i++)
+            for (int i = 0; i < bookRepository.Get(id).Images.Count; i++)
             {
-                freeImages.Add(_unitOfWork.Books.Get(id).Images.ElementAt(i));
+                freeImages.Add(bookRepository.Get(id).Images.ElementAt(i));
             }
 
             ViewBag.imagesList = freeImages;
 
-            ViewBag.authorsList = _unitOfWork.Authors.GetAll();
+            ViewBag.authorsList = authorRepository.GetAll();
 
-            ViewBag.genresList = new SelectList(_unitOfWork.Genres.GetAll(), "Id", "Name");
+            ViewBag.genresList = new SelectList(genreRepository.GetAll(), "Id", "Name");
 
-            var book = _unitOfWork.Books.Get(id);
+            var book = bookRepository.Get(id);
 
             if (book != null)
             {
-                
+
                 return View(book);
             }
 
@@ -182,11 +188,11 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpPost]
         public ActionResult EditBook(Book book, int[] selectedAuthors, int[] selectedImages)
         {
-            var newBook = _unitOfWork.Books.Get(book.Id);
+            var newBook = bookRepository.Get(book.Id);
 
             newBook.GenreId = book.GenreId;
 
-            newBook.Genre = _unitOfWork.Genres.Get(Convert.ToInt32(book.GenreId));
+            newBook.Genre = genreRepository.Get(Convert.ToInt32(book.GenreId));
 
             newBook.Name = book.Name;
 
@@ -208,7 +214,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedAuthors != null)
             {
-                foreach (var a in _unitOfWork.Authors.GetAll().Where(a => selectedAuthors.Contains(a.Id)))
+                foreach (var a in authorRepository.GetAll().Where(a => selectedAuthors.Contains(a.Id)))
                 {
                     newBook.Authors.Add(a);
                 }
@@ -216,7 +222,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedImages != null)
             {
-                foreach (var a in _unitOfWork.Images.GetAll().Where(a => selectedImages.Contains(a.Id)))
+                foreach (var a in imageRepository.GetAll().Where(a => selectedImages.Contains(a.Id)))
                 {
                     newBook.Images.Add(a);
                 }
@@ -224,9 +230,9 @@ namespace LiMarket_V1._0._0.Controllers
 
             newBook.UpgradeDate = DateTime.Now;
 
-            _unitOfWork.Books.Update(newBook);
+            bookRepository.Update(newBook);
 
-            _unitOfWork.Save();
+            bookRepository.Save();
 
             return RedirectToAction("Index");
         }
@@ -237,14 +243,14 @@ namespace LiMarket_V1._0._0.Controllers
             Tool tool = new Tool();
             var freeImages = new List<Image>(tool.GetImages());
 
-            for (int i = 0; i < _unitOfWork.Authors.Get(id).Images.Count; i++)
+            for (int i = 0; i < authorRepository.Get(id).Images.Count; i++)
             {
-                freeImages.Add(_unitOfWork.Authors.Get(id).Images.ElementAt(i));
+                freeImages.Add(authorRepository.Get(id).Images.ElementAt(i));
             }
 
             ViewBag.imagesList = freeImages;
-            ViewBag.booksList = _unitOfWork.Books.GetAll();
-            var author = _unitOfWork.Authors.Get(id);
+            ViewBag.booksList = bookRepository.GetAll();
+            var author = authorRepository.Get(id);
 
             if (author != null)
             {
@@ -257,7 +263,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpPost]
         public ActionResult EditAuthor(Author author, int[] selectedBooks, int[] selectedImages)
         {
-            var newAuthor = _unitOfWork.Authors.Get(author.Id);
+            var newAuthor = authorRepository.Get(author.Id);
 
             newAuthor.Description = author.Description;
 
@@ -275,7 +281,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedBooks != null)
             {
-                foreach (var a in _unitOfWork.Books.GetAll().Where(a => selectedBooks.Contains(a.Id)))
+                foreach (var a in bookRepository.GetAll().Where(a => selectedBooks.Contains(a.Id)))
                 {
                     newAuthor.Books.Add(a);
                 }
@@ -283,7 +289,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedImages != null)
             {
-                foreach (var a in _unitOfWork.Images.GetAll().Where(a => selectedImages.Contains(a.Id)))
+                foreach (var a in imageRepository.GetAll().Where(a => selectedImages.Contains(a.Id)))
                 {
                     newAuthor.Images.Add(a);
                 }
@@ -291,9 +297,9 @@ namespace LiMarket_V1._0._0.Controllers
 
             newAuthor.UpgradeDate = DateTime.Now;
 
-            _unitOfWork.Authors.Update(newAuthor);
+            authorRepository.Update(newAuthor);
 
-            _unitOfWork.Save();
+            authorRepository.Save();
 
             return RedirectToAction("Index");
         }
@@ -301,8 +307,8 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpGet]
         public ActionResult EditImage(int id)
         {
-           
-            var image = _unitOfWork.Images.Get(id);
+
+            var image = imageRepository.Get(id);
 
             if (image != null)
             {
@@ -316,9 +322,9 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpPost]
         public ActionResult EditImage(Image image)
         {
-            _unitOfWork.Images.Update(image);
+            imageRepository.Update(image);
 
-            _unitOfWork.Save();
+            imageRepository.Save();
 
             return RedirectToAction("Index");
         }
@@ -329,23 +335,23 @@ namespace LiMarket_V1._0._0.Controllers
             Tool tool = new Tool();
             var freeBooks = new List<Book>(tool.GetBooks());
 
-            for (int i = 0; i < _unitOfWork.Genres.Get(id).Books.Count; i++)
+            for (int i = 0; i < genreRepository.Get(id).Books.Count; i++)
             {
-                freeBooks.Add(_unitOfWork.Genres.Get(id).Books.ElementAt(i));
+                freeBooks.Add(genreRepository.Get(id).Books.ElementAt(i));
             }
 
             var freeImages = new List<Image>(tool.GetImages());
 
-            for (int i = 0; i < _unitOfWork.Genres.Get(id).Images.Count; i++)
+            for (int i = 0; i < genreRepository.Get(id).Images.Count; i++)
             {
-                freeImages.Add(_unitOfWork.Genres.Get(id).Images.ElementAt(i));
+                freeImages.Add(genreRepository.Get(id).Images.ElementAt(i));
             }
 
             ViewBag.booksList = freeBooks;
 
             ViewBag.imagesList = freeImages;
 
-            var genre = _unitOfWork.Genres.Get(id);
+            var genre = genreRepository.Get(id);
 
             if (genre != null)
             {
@@ -359,7 +365,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpPost]
         public ActionResult EditGenre(Genre genre, int[] selectedBooks, int[] selectedImages)
         {
-            var newGenre = _unitOfWork.Genres.Get(genre.Id);
+            var newGenre = genreRepository.Get(genre.Id);
 
             newGenre.Name = genre.Name;
 
@@ -373,7 +379,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedBooks != null)
             {
-                foreach (var a in _unitOfWork.Books.GetAll().Where(a => selectedBooks.Contains(a.Id)))
+                foreach (var a in bookRepository.GetAll().Where(a => selectedBooks.Contains(a.Id)))
                 {
                     newGenre.Books.Add(a);
                 }
@@ -381,7 +387,7 @@ namespace LiMarket_V1._0._0.Controllers
 
             if (selectedImages != null)
             {
-                foreach (var a in _unitOfWork.Images.GetAll().Where(a => selectedImages.Contains(a.Id)))
+                foreach (var a in imageRepository.GetAll().Where(a => selectedImages.Contains(a.Id)))
                 {
                     newGenre.Images.Add(a);
                 }
@@ -389,62 +395,62 @@ namespace LiMarket_V1._0._0.Controllers
 
             newGenre.UpgradeDate = DateTime.Now;
 
-            _unitOfWork.Genres.Update(newGenre);
+            genreRepository.Update(newGenre);
 
-            _unitOfWork.Save();
+            genreRepository.Save();
 
             return RedirectToAction("Index");
         }
 
         public ActionResult ReadAllBooks()
         {
-            ViewBag.Genres = _unitOfWork.Genres.GetAll();
+            ViewBag.Genres = genreRepository.GetAll();
 
-            var books = _unitOfWork.Books.GetAll();
+            var books = bookRepository.GetAll();
 
             return View(books);
         }
 
         public ActionResult ReadAllAuthors()
         {
-            var authors = _unitOfWork.Authors.GetAll();
+            var authors = authorRepository.GetAll();
 
             return View(authors);
         }
 
         public ActionResult ReadAllImages()
         {
-            var images = _unitOfWork.Images.GetAll();
+            var images = imageRepository.GetAll();
 
             return View(images);
         }
 
         public ActionResult ReadAllGenres()
         {
-            var genres = _unitOfWork.Genres.GetAll();
+            var genres = genreRepository.GetAll();
 
             return View(genres);
         }
 
         public ActionResult InfoBook(int id)
         {
-            var book = _unitOfWork.Books.Get(id);
+            var book = bookRepository.Get(id);
 
-            ViewBag.Genre = _unitOfWork.Genres.Get(Convert.ToInt32(book.GenreId));
+            ViewBag.Genre = genreRepository.Get(Convert.ToInt32(book.GenreId));
 
             return View(book);
         }
 
         public ActionResult InfoAuthor(int id)
         {
-            var author = _unitOfWork.Authors.Get(id);
+            var author = authorRepository.Get(id);
 
             return View(author);
         }
 
         public ActionResult InfoImage(int id)
         {
-            var image = _unitOfWork.Images.Get(id);
+            var image = imageRepository.Get(id);
 
             return View(image);
         }
@@ -452,7 +458,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpGet]
         public ActionResult DeleteBook(int id)
         {
-            var b = _unitOfWork.Books.Get(id);
+            var b = bookRepository.Get(id);
 
             if (b == null)
             {
@@ -465,19 +471,19 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpPost, ActionName("DeleteBook")]
         public ActionResult DeleteBookConfirmed(int id)
         {
-            var size = _unitOfWork.Books.Get(id).Images.Count;
+            var size = bookRepository.Get(id).Images.Count;
 
             if (size != 0)
             {
                 for (int i = 0; i < size; i++)
                 {
-                    _unitOfWork.Images.Delete(_unitOfWork.Books.Get(id).Images.First().Id);
+                    imageRepository.Delete(bookRepository.Get(id).Images.First().Id);
                 }
             }
 
-            _unitOfWork.Books.Delete(id);
+            bookRepository.Delete(id);
 
-            _unitOfWork.Save();
+            bookRepository.Save();
 
             return RedirectToAction("Index");
         }
@@ -485,7 +491,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpGet]
         public ActionResult DeleteGenre(int id)
         {
-            var genre = _unitOfWork.Genres.Get(id);
+            var genre = genreRepository.Get(id);
 
             if (genre == null)
             {
@@ -498,37 +504,37 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpPost, ActionName("DeleteGenre")]
         public ActionResult DeleteGenreConfirmed(int id)
         {
-            var books = _unitOfWork.Genres.Get(id).Books.ToList();
+            var books = genreRepository.Get(id).Books.ToList();
 
             foreach (var t in books)
             {
-                var s = _unitOfWork.Books.Get(t.Id).Images.Count;
+                var s = bookRepository.Get(t.Id).Images.Count;
 
                 if (s != 0)
                 {
                     for (int i = 0; i < s; i++)
                     {
-                        _unitOfWork.Images.Delete(_unitOfWork.Books.Get(t.Id).Images.First().Id);
+                        imageRepository.Delete(bookRepository.Get(t.Id).Images.First().Id);
                     }
                 }
 
-                _unitOfWork.Books.Delete(t.Id);
+                bookRepository.Delete(t.Id);
 
-                _unitOfWork.Save();
+                bookRepository.Save();
             }
-            var size = _unitOfWork.Genres.Get(id).Images.Count;
+            var size = genreRepository.Get(id).Images.Count;
 
             if (size != 0)
             {
                 for (int i = 0; i < size; i++)
                 {
-                    _unitOfWork.Images.Delete(_unitOfWork.Genres.Get(id).Images.First().Id);
+                    imageRepository.Delete(genreRepository.Get(id).Images.First().Id);
                 }
             }
 
-            _unitOfWork.Genres.Delete(id);
+            genreRepository.Delete(id);
 
-            _unitOfWork.Save();
+            genreRepository.Save();
 
             return RedirectToAction("Index");
         }
@@ -536,7 +542,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpGet]
         public ActionResult DeleteAuthor(int id)
         {
-            var author = _unitOfWork.Authors.Get(id);
+            var author = authorRepository.Get(id);
 
             if (author == null)
             {
@@ -549,26 +555,26 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpPost, ActionName("DeleteAuthor")]
         public ActionResult DeleteAuthorConfirmed(int id)
         {
-            var size = _unitOfWork.Authors.Get(id).Images.Count;
+            var size = authorRepository.Get(id).Images.Count;
 
             if (size != 0)
             {
                 for (int i = 0; i < size; ++i)
                 {
-                    _unitOfWork.Images.Delete(_unitOfWork.Authors.Get(id).Images.First().Id);
+                    imageRepository.Delete(authorRepository.Get(id).Images.First().Id);
                 }
             }
 
-            _unitOfWork.Authors.Delete(id);
+            authorRepository.Delete(id);
 
-            _unitOfWork.Save();
+            authorRepository.Save();
 
             return RedirectToAction("Index");
         }
 
         public ActionResult InfoGenre(int id)
         {
-            var genre = _unitOfWork.Genres.Get(id);
+            var genre = genreRepository.Get(id);
 
             return View(genre);
         }
@@ -576,7 +582,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpGet]
         public ActionResult DeleteImage(int id)
         {
-            var image = _unitOfWork.Images.Get(id);
+            var image = imageRepository.Get(id);
 
             if (image == null)
             {
@@ -589,9 +595,9 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpPost, ActionName("DeleteImage")]
         public ActionResult DeleteImageConfirmed(int id)
         {
-            _unitOfWork.Images.Delete(id);
+            imageRepository.Delete(id);
 
-            _unitOfWork.Save();
+            imageRepository.Save();
 
             return RedirectToAction("Index");
         }
@@ -606,9 +612,9 @@ namespace LiMarket_V1._0._0.Controllers
         {
             if (!ModelState.IsValid) return View(image);
 
-            _unitOfWork.Images.Create(image);
+            imageRepository.Create(image);
 
-            _unitOfWork.Save();
+            imageRepository.Save();
 
             return RedirectToAction("Index");
         }

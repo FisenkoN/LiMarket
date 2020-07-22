@@ -9,13 +9,17 @@ namespace LiMarket_V1._0._0.Models.Repository
 {
     public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private MsContext _db;
+        private MsContext db;
         private DbSet<TEntity> _entities;
 
-        public EfRepository(MsContext context)
+        public MsContext Context
         {
-            _db = context;
-            _entities = context.Set<TEntity>();
+            get { return db; }
+            set 
+            { 
+                db = value;
+                _entities = Context.Set<TEntity>();
+            }
         }
 
         public void Create(TEntity item)
@@ -42,7 +46,12 @@ namespace LiMarket_V1._0._0.Models.Repository
 
         public void Update(TEntity item)
         {
-            _db.Entry(item).State = EntityState.Modified;
+            db.Entry(item).State = EntityState.Modified;
+        }
+
+        public void Save()
+        {
+            db.SaveChanges();
         }
     }
 }
