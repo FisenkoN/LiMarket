@@ -9,14 +9,15 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Configuration;
+using LiMarket_V1._0._0.Tools;
 
 namespace LiMarket_V1._0._0
 {
     public class MvcApplication : System.Web.HttpApplication
     {
         protected void Application_Start()
-        {   
-            
+        {
+            AutofacConfig.ConfigureContainer();
             //Database.SetInitializer(new Initializer());
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
