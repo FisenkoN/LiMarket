@@ -41,7 +41,17 @@ namespace LiMarket_V1._0._0.Models.Repository
 
         public ICollection<TEntity> GetAll()
         {
-            return _entities.ToList();
+            var u = _entities;
+            try
+            {
+                return _entities.ToList();
+            }
+            catch (Exception e)
+            {
+                var m = e.Message; 
+                throw e;
+            }
+            
         }
 
         public void Update(TEntity item)

@@ -333,6 +333,7 @@ namespace LiMarket_V1._0._0.Controllers
         public ActionResult EditGenre(int id)
         {
             Tool tool = new Tool();
+            var y = tool.GetBooks();
             var freeBooks = new List<Book>(tool.GetBooks());
 
             for (int i = 0; i < genreRepository.Get(id).Books.Count; i++)
