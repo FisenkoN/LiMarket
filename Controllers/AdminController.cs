@@ -31,7 +31,7 @@ namespace LiMarket_V1._0._0.Controllers
 
         public ActionResult CreateAuthor()
         {
-            Tool tool = new Tool();
+            Tool tool = new Tool(bookRepository, imageRepository, authorRepository, genreRepository);
             ViewBag.booksList = bookRepository.GetAll();
             ViewBag.imagesList = new List<Image>(tool.GetImages());
 
@@ -72,7 +72,7 @@ namespace LiMarket_V1._0._0.Controllers
 
         public ActionResult CreateBook()
         {
-            Tool tool = new Tool();
+            Tool tool = new Tool(bookRepository, imageRepository, authorRepository, genreRepository);
 
             ViewBag.genresList = new SelectList(genreRepository.GetAll(), "Id", "Name");
 
@@ -117,7 +117,7 @@ namespace LiMarket_V1._0._0.Controllers
 
         public ActionResult CreateGenre()
         {
-            Tool tool = new Tool();
+            Tool tool = new Tool(bookRepository, imageRepository, authorRepository, genreRepository);
             ViewBag.booksList = new List<Book>(tool.GetBooks());
             ViewBag.imagesList = new List<Image>(tool.GetImages());
 
@@ -160,7 +160,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpGet]
         public ActionResult EditBook(int id)
         {
-            Tool tool = new Tool();
+            Tool tool = new Tool(bookRepository, imageRepository, authorRepository, genreRepository);
             var freeImages = new List<Image>(tool.GetImages());
 
             for (int i = 0; i < bookRepository.Get(id).Images.Count; i++)
@@ -240,7 +240,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpGet]
         public ActionResult EditAuthor(int id)
         {
-            Tool tool = new Tool();
+            Tool tool = new Tool(bookRepository, imageRepository, authorRepository, genreRepository);
             var freeImages = new List<Image>(tool.GetImages());
 
             for (int i = 0; i < authorRepository.Get(id).Images.Count; i++)
@@ -332,7 +332,7 @@ namespace LiMarket_V1._0._0.Controllers
         [HttpGet]
         public ActionResult EditGenre(int id)
         {
-            Tool tool = new Tool();
+            Tool tool = new Tool(bookRepository, imageRepository, authorRepository, genreRepository);
             var y = tool.GetBooks();
             var freeBooks = new List<Book>(tool.GetBooks());
 

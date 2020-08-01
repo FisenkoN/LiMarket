@@ -1,5 +1,6 @@
 ﻿using LiMarket_V1._0._0.Models;
 using LiMarket_V1._0._0.Models.Repository;
+using Microsoft.Ajax.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,11 +8,22 @@ namespace LiMarket_V1._0._0.Tools
 {
     public class Tool
     {
-        readonly UnitOfWork unit = new UnitOfWork();
+        private IRepository<Book> bookRepository;
+        private IRepository<Image> imageRepository;
+        private IRepository<Genre> genreRepository;
+        private IRepository<Author> authorRepository;
+
+        public Tool(IRepository<Book> book, IRepository<Image> image, IRepository<Author> author, IRepository<Genre> genre)
+        {
+            bookRepository = book;
+            imageRepository = image;
+            genreRepository = genre;
+            authorRepository = author;
+        }
 
         public  List<Image> GetImages()
         {
-            var images = unit.Images.GetAll();
+            var images = imageRepository.GetAll();
             var freeImages = new List<Image>();
             for (int i = 0; i < images.Count; i++)
             {
@@ -25,7 +37,7 @@ namespace LiMarket_V1._0._0.Tools
 
         public  List<Book> GetBooks()
         {
-            var books = unit.Books.GetAll();
+            var books = bookRepository.GetAll();
             var freeBooks = new List<Book>();
             for (int i = 0; i < books.Count; i++)
             {
@@ -39,7 +51,7 @@ namespace LiMarket_V1._0._0.Tools
 
         private  bool IsFree(Book book)
         {
-            var genreList = unit.Genres.GetAll();
+            var genreList = genreRepository.GetAll();
             for (int i = 0; i < genreList.Count; i++)
             {
                 var books = genreList.ElementAt(i).Books;
@@ -57,7 +69,7 @@ namespace LiMarket_V1._0._0.Tools
 
         private  bool IsFree(Image image)
         {
-            var genreList = unit.Genres.GetAll();
+            var genreList = genreRepository.GetAll();
             for (int i = 0; i < genreList.Count; i++)
             {
                 var images = genreList.ElementAt(i).Images;
@@ -72,7 +84,7 @@ namespace LiMarket_V1._0._0.Tools
                 }
             }
 
-            var bookList = unit.Books.GetAll();
+            var bookList = bookRepository.GetAll();
             for (int i = 0; i < bookList.Count; i++)
             {
                 var images = bookList.ElementAt(i).Images;
@@ -86,7 +98,7 @@ namespace LiMarket_V1._0._0.Tools
                 }
             }
 
-            var authorList = unit.Authors.GetAll();
+            var authorList = authorRepository.GetAll();
             for (int i = 0; i < authorList.Count; i++)
             {
                 var images = authorList.ElementAt(i).Images;
